@@ -32,7 +32,7 @@ DOCKER_CONTAINER_NAME ?= mm-test
 
 all: dist-local
 
-dist: | build-server build-client go-test package
+dist: | build-server build-client package
 	mv ./model/version.go.bak ./model/version.go
 	@if [ "$(BUILD_ENTERPRISE)" = "true" ] && [ -d "$(ENTERPRISE_DIR)" ]; then \
 		mv ./mattermost.go.bak ./mattermost.go; \
@@ -151,7 +151,7 @@ package:
 build-client:
 	@echo Building mattermost web client
 
-	cd web/react/ && npm install
+	cd web/react/ && npm install && npm install babel-runtime
 
 	@echo Checking for style guide compliance
 

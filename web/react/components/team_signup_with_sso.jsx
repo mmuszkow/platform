@@ -100,6 +100,18 @@ export default class SSOSignUpPage extends React.Component {
                     <span>{'Create team with Google Apps Account'}</span>
                 </a>
             );
+        } else if (this.props.service === Constants.SSO_HEADERS) {
+            button = (
+                <a
+                    className='btn btn-custom-login gitlab btn-full'
+                    href='#'
+                    onClick={this.handleSubmit}
+                    disabled={disabled}
+                >
+                    <span className='icon'/>
+                    <span>{'Create team'}</span>
+                </a>
+            );
         }
 
         return (

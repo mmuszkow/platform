@@ -12,7 +12,7 @@ export default class TeamSignUp extends React.Component {
 
         this.updatePage = this.updatePage.bind(this);
 
-        var count = 0;
+        var count = 1;
 
         if (global.window.mm_config.EnableSignUpWithEmail === 'true') {
             count = count + 1;
@@ -29,7 +29,7 @@ export default class TeamSignUp extends React.Component {
         } else if (global.window.mm_config.EnableSignUpWithGitLab === 'true') {
             this.state = {page: 'gitlab'};
         } else {
-            this.state = {page: 'none'};
+            this.state = {page: 'headers'};
         }
     }
 
@@ -121,8 +121,13 @@ export default class TeamSignUp extends React.Component {
                     <SSOSignupPage service={Constants.GOOGLE_SERVICE} />
                 </div>
             );
-        } else if (this.state.page === 'none') {
-            return (<div>{'No team creation method has been enabled.  Please contact an administrator for access.'}</div>);
+        } else if (this.state.page === 'headers') {
+            return (
+                <div>
+                    {teamListing}
+                    <SSOSignupPage service={Constants.SSO_HEADERS} />
+                </div>
+            );
         }
     }
 }

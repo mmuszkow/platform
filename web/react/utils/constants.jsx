@@ -117,6 +117,7 @@ export default {
     GITLAB_SERVICE: 'gitlab',
     GOOGLE_SERVICE: 'google',
     EMAIL_SERVICE: 'email',
+    SSO_HEADERS: 'ssoheaders',
     SIGNIN_CHANGE: 'signin_change',
     SIGNIN_VERIFIED: 'verified',
     POST_CHUNK_SIZE: 60,

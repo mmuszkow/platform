@@ -25,24 +25,10 @@ export default class LoginLdap extends React.Component {
             return;
         }
 
-        const id = this.refs.id.value.trim();
-        if (!id) {
-            state.serverError = 'An LDAP ID is required';
-            this.setState(state);
-            return;
-        }
-
-        const password = this.refs.password.value.trim();
-        if (!password) {
-            state.serverError = 'An LDAP password is required';
-            this.setState(state);
-            return;
-        }
-
         state.serverError = '';
         this.setState(state);
 
-        Client.loginByLdap(teamName, id, password,
+        Client.loginByLdap(teamName, 'unused', 'unused',
             () => {
                 const redirect = Utils.getUrlParameter('redirect');
                 if (redirect) {
@@ -71,30 +57,12 @@ export default class LoginLdap extends React.Component {
                     <div className={'form-group' + errorClass}>
                         {serverError}
                     </div>
-                    <div className={'form-group' + errorClass}>
-                        <input
-                            autoFocus={true}
-                            className='form-control'
-                            ref='id'
-                            placeholder='LDAP Username'
-                            spellCheck='false'
-                        />
-                    </div>
-                    <div className={'form-group' + errorClass}>
-                        <input
-                            type='password'
-                            className='form-control'
-                            ref='password'
-                            placeholder='LDAP Password'
-                            spellCheck='false'
-                        />
-                    </div>
                     <div className='form-group'>
                         <button
                             type='submit'
                             className='btn btn-primary'
                         >
-                            {'Sign in'}
+                            {'Sign in using SSO'}
                         </button>
                     </div>
                 </div>

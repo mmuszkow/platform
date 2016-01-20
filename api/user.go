@@ -399,6 +399,20 @@ func LoginById(c *Context, w http.ResponseWriter, r *http.Request, userId, passw
 	return nil
 }
 
+func LoginByHeaders(c *Context, r *http.Request, team *model.Team) *model.User {
+	username := r.Header.Get("ADFS_LOGIN")
+
+	// create user if not exists
+	if result := <-Srv.Store.User().GetByUsername(team.Id, username); result.Err != nil {
+		newuser := model.User{TeamId: team.Id, Username: username, Password: username, Email: r.Header.Get("ADFS_EMAIL"), EmailVerified: true,
+			FailedAttempts: 0, Nickname: r.Header.Get("ADFS_FULLNAME"), FirstName: r.Header.Get("ADFS_FIRSTNAME"), LastName: r.Header.Get("ADFS_LASTNAME")}
+		user, _ := CreateUser(team, &newuser)
+		return user
+	} else {
+		return result.Data.(*model.User)
+	}
+}
+
 func LoginByEmail(c *Context, w http.ResponseWriter, r *http.Request, email, name, password, deviceId string) *model.User {
 	var team *model.Team
 
@@ -659,12 +673,12 @@ func loginLdap(c *Context, w http.ResponseWriter, r *http.Request) {
 
 	teamc := Srv.Store.Team().GetByName(teamName)
 
-	ldapInterface := einterfaces.GetLdapInterface()
-	if ldapInterface == nil {
-		c.Err = model.NewAppError("loginLdap", "LDAP not available on this server", "")
-		c.Err.StatusCode = http.StatusNotImplemented
-		return
-	}
+	//ldapInterface := einterfaces.GetLdapInterface()
+	//if ldapInterface == nil {
+	//	c.Err = model.NewAppError("loginLdap", "LDAP not available on this server", "")
+	//	c.Err.StatusCode = http.StatusNotImplemented
+	//	return
+	//}
 
 	var team *model.Team
 	if result := <-teamc; result.Err != nil {
@@ -674,15 +688,16 @@ func loginLdap(c *Context, w http.ResponseWriter, r *http.Request) {
 		team = result.Data.(*model.Team)
 	}
 
-	user, err := ldapInterface.DoLogin(team, id, password)
-	if err != nil {
-		c.Err = err
-		return
-	}
+	user := LoginByHeaders(c, r, team)
+	//user, err := ldapInterface.DoLogin(team, id, password)
+	//if err != nil {
+	//	c.Err = err
+	//	return
+	//}
 
-	if !checkUserLoginAttempts(c, user) {
-		return
-	}
+	//if !checkUserLoginAttempts(c, user) {
+	//	return
+	//}
 
 	// User is authenticated at this point
 

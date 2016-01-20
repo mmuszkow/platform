@@ -21,6 +21,7 @@ const (
 
 	SERVICE_GITLAB = "gitlab"
 	SERVICE_GOOGLE = "google"
+	SSO_HEADERS    = "ssoheaders"
 )
 
 type ServiceSettings struct {

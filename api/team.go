@@ -88,17 +88,22 @@ func createTeamFromSSO(c *Context, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	service := params["service"]
 
-	sso := utils.Cfg.GetSSOService(service)
-	if sso != nil && !sso.Enable {
-		c.SetInvalidParam("createTeamFromSSO", "service")
-		return
+	if service != "ssoheaders" {
+		sso := utils.Cfg.GetSSOService(service)
+		if sso != nil && !sso.Enable {
+			c.SetInvalidParam("createTeamFromSSO", "service")
+			return
+		}
 	}
 
 	team := model.TeamFromJson(r.Body)
-
 	if team == nil {
 		c.SetInvalidParam("createTeamFromSSO", "team")
 		return
+	}
+
+	if service == "ssoheaders" {
+		team.Email = r.Header.Get("ADFS_EMAIL")
 	}
 
 	if !isTeamCreationAllowed(c, team.Email) {
@@ -138,7 +143,13 @@ func createTeamFromSSO(c *Context, w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		data := map[string]string{"follow_link": c.GetSiteURL() + "/" + rteam.Name + "/signup/" + service}
+		data := map[string]string{}
+
+		if service != "ssoheaders" {
+			data["follow_link"] = c.GetSiteURL() + "/" + rteam.Name + "/signup/" + service
+		} else {
+			data["follow_link"] = c.GetSiteURL() + "/" + rteam.Name
+		}
 		w.Write([]byte(model.MapToJson(data)))
 
 	}
